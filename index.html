@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1117">
+  <meta name="description" content="Consulta rápida de contenedores para operaciones de terminal y distribución logística.">
+  <title>Consulta de contenedores | Terminal</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Terminal, inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M4 10.5 16 4l12 6.5v13L16 30 4 23.5v-13Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M4.5 10.8 16 17l11.5-6.2M16 17v12.5M10 7.3l12 6.4v5.1" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </span>
+        <span class="brand-copy">
+          <strong>MUELLE<span>/</span>OPS</strong>
+          <small>TERMINAL LOGÍSTICA</small>
+        </span>
+      </a>
+      <div class="system-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>SISTEMA LOCAL</span>
+        <span class="status-divider" aria-hidden="true"></span>
+        <span id="current-time" class="system-time" aria-label="Hora local"></span>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-heading" aria-labelledby="page-title">
+        <div class="eyebrow"><span>01</span> / CONTROL DE UNIDADES</div>
+        <h1 id="page-title">Consulta de <span>contenedores</span></h1>
+        <p>Accede a la información operativa de una unidad en segundos.</p>
+      </section>
+
+      <section class="search-panel" aria-labelledby="search-title">
+        <div class="panel-heading">
+          <div>
+            <span class="section-label">BÚSQUEDA DIRECTA</span>
+            <h2 id="search-title">Identificación de unidad</h2>
+          </div>
+          <span class="iso-tag">ISO 6346</span>
+        </div>
+        <form id="search-form" novalidate>
+          <label for="container-code">Código del contenedor</label>
+          <div class="search-controls">
+            <div class="input-wrap">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7"/>
+                <path d="m16 16 4.2 4.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+              <input
+                id="container-code"
+                name="container-code"
+                type="text"
+                placeholder="Ej. MSCU1234567"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                aria-describedby="search-hint search-message"
+                maxlength="16"
+              >
+              <kbd>↵</kbd>
+            </div>
+            <button class="search-button" type="submit">
+              <span>Consultar</span>
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="form-feedback">
+            <p id="search-hint" class="field-hint">4 letras + 7 dígitos · Los espacios y minúsculas se normalizan automáticamente.</p>
+            <p id="search-message" class="search-message" role="alert" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+      <section id="result-section" class="result-section" aria-labelledby="result-heading" hidden>
+        <div class="section-heading">
+          <div>
+            <span class="section-label">RESULTADO DE CONSULTA</span>
+            <h2 id="result-heading">Ficha operativa</h2>
+          </div>
+          <span class="live-indicator"><span></span> DATOS ACTUALIZADOS</span>
+        </div>
+        <article id="container-card" class="container-card" aria-live="polite"></article>
+      </section>
+
+      <section id="empty-state" class="empty-state" aria-label="Sin consulta seleccionada">
+        <div class="empty-illustration" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none">
+            <path d="M10 22 32 10l22 12v25L32 59 10 47V22Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="m10.5 22.5 21.5 12 21.5-12M32 35v23M21 16l22 12v9" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="49" cy="48" r="10" fill="#101922" stroke="currentColor" stroke-width="1.5"/>
+            <path d="m56 55 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h2>Listo para consultar</h2>
+          <p>Ingresa un código ISO 6346 para ver el estado y la ubicación de la unidad.</p>
+        </div>
+      </section>
+
+      <section class="history-section" aria-labelledby="history-heading">
+        <div class="section-heading history-heading">
+          <div>
+            <span class="section-label">ACCESO RÁPIDO</span>
+            <h2 id="history-heading">Consultas recientes <span id="history-count" class="count-badge">0</span></h2>
+          </div>
+          <button id="clear-history" class="clear-button" type="button" disabled>
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M4 6h12m-9 0V4h6v2m-7 0 1 10h6l1-10m-5 3v4m2-4v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Limpiar historial
+          </button>
+        </div>
+        <div id="history-list" class="history-list" aria-live="polite"></div>
+        <p id="history-empty" class="history-empty">Las unidades consultadas aparecerán aquí.</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>MUELLE/OPS <span class="footer-separator">·</span> HERRAMIENTA DE CONSULTA OPERATIVA</span>
+      <span>DATOS DE DEMOSTRACIÓN</span>
+    </footer>
+  </div>
+</body>
+</html>
