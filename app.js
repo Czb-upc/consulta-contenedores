@@ -1,6 +1,7 @@
 // Coordina la búsqueda, la ficha operativa y el historial del navegador.
+import { actualizarEntradasHistorial, formatearFechaHora, MAXIMO_HISTORIAL } from "./history-utils.mjs";
+
 const CLAVE_HISTORIAL = "muelle-ops-historial";
-const MAXIMO_HISTORIAL = 10;
 
 const formulario = document.querySelector("#search-form");
 const campoCodigo = document.querySelector("#container-code");
@@ -53,9 +54,7 @@ function guardarHistorial(historial) {
 }
 
 function actualizarHistorial(codigo) {
-  const historial = leerHistorial().filter((item) => item.codigo !== codigo);
-  historial.unshift({ codigo });
-  const historialReciente = historial.slice(0, MAXIMO_HISTORIAL);
+  const historialReciente = actualizarEntradasHistorial(leerHistorial(), codigo);
   guardarHistorial(historialReciente);
   dibujarHistorial(historialReciente);
 }
@@ -77,11 +76,28 @@ function dibujarHistorial(historial = leerHistorial()) {
     codigo.className = "history-code";
     codigo.textContent = contenedor.codigo;
 
+    const informacion = document.createElement("span");
+    informacion.className = "history-info";
+    informacion.append(codigo);
+
+    const fechaHora = formatearFechaHora(item.fechaHora);
+    if (fechaHora) {
+      const fecha = document.createElement("time");
+      fecha.className = "history-date";
+      fecha.dateTime = item.fechaHora;
+      fecha.textContent = fechaHora;
+      informacion.append(fecha);
+      boton.setAttribute(
+        "aria-label",
+        `Consultar ${contenedor.codigo}, consultado ${fechaHora}, estado ${contenedor.estado}`
+      );
+    }
+
     const estado = document.createElement("span");
     estado.className = `history-state ${claseEstado(contenedor.estado)}`;
     estado.textContent = contenedor.estado;
 
-    boton.append(codigo, estado);
+    boton.append(informacion, estado);
     listaHistorial.append(boton);
   });
 

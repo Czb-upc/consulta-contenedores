@@ -731,6 +731,18 @@ kbd {
   white-space: nowrap;
 }
 
+.history-info {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.history-date {
+  color: var(--faint);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
 .history-state {
   display: inline-flex;
   flex: 0 0 auto;
