@@ -22,3 +22,7 @@ Desarrollar una aplicación web ligera, intuitiva y de rápida respuesta que per
 * **Alertas Visuales:** Indicadores de color para cargas especiales (p. ej., rojo/amarillo para IMO o Reefer).
 * **Historial Rápido de Consultas:** Registro automático en el navegador (`localStorage`) de los últimos contenedores buscados para acceso en un clic.
 * **Diseño Responsivo e Industrial:** Interfaz adaptable a pantallas de escritorios de garita o dispositivos móviles de patio.
+
+## Pruebas
+
+Desde la raíz del proyecto, inicia un servidor estático con `python -m http.server 8000` y abre `http://localhost:8000/tests/clear-history.test.html`. La prueba restaura el valor original del historial al terminar.

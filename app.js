@@ -12,7 +12,12 @@ const estadoVacio = document.querySelector("#empty-state");
 const listaHistorial = document.querySelector("#history-list");
 const mensajeHistorialVacio = document.querySelector("#history-empty");
 const contadorHistorial = document.querySelector("#history-count");
+const encabezadoHistorial = document.querySelector("#history-heading");
 const botonLimpiar = document.querySelector("#clear-history");
+const dialogoLimpiarHistorial = document.querySelector("#clear-history-dialog");
+const botonCancelarLimpieza = document.querySelector("#cancel-clear-history");
+const botonConfirmarLimpieza = document.querySelector("#confirm-clear-history");
+const mensajeErrorLimpieza = document.querySelector("#clear-history-error");
 const reloj = document.querySelector("#current-time");
 
 // Convierte entradas con minúsculas o espacios a un código canónico.
@@ -233,12 +238,24 @@ function consultar(codigoOriginal) {
 }
 
 function limpiarHistorial() {
+  mensajeErrorLimpieza.hidden = true;
   try {
     localStorage.removeItem(CLAVE_HISTORIAL);
     dibujarHistorial([]);
+    dialogoLimpiarHistorial.close();
+    encabezadoHistorial.focus();
   } catch (error) {
-    mostrarMensaje("No se pudo limpiar el historial guardado en este navegador.", true);
+    const mensaje = "No se pudo limpiar el historial guardado en este navegador.";
+    mensajeErrorLimpieza.textContent = mensaje;
+    mensajeErrorLimpieza.hidden = false;
+    mostrarMensaje(mensaje, true);
   }
+}
+
+function solicitarLimpiezaHistorial() {
+  mensajeErrorLimpieza.hidden = true;
+  mensajeErrorLimpieza.textContent = "";
+  dialogoLimpiarHistorial.showModal();
 }
 
 function actualizarReloj() {
@@ -264,7 +281,9 @@ listaHistorial.addEventListener("click", (evento) => {
   if (boton) consultar(boton.dataset.codigo);
 });
 
-botonLimpiar.addEventListener("click", limpiarHistorial);
+botonLimpiar.addEventListener("click", solicitarLimpiezaHistorial);
+botonCancelarLimpieza.addEventListener("click", () => dialogoLimpiarHistorial.close());
+botonConfirmarLimpieza.addEventListener("click", limpiarHistorial);
 
 dibujarHistorial();
 actualizarReloj();
