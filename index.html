@@ -113,7 +113,7 @@
         <div class="section-heading history-heading">
           <div>
             <span class="section-label">ACCESO RÁPIDO</span>
-            <h2 id="history-heading">Consultas recientes <span id="history-count" class="count-badge">0</span></h2>
+            <h2 id="history-heading" tabindex="-1">Consultas recientes <span id="history-count" class="count-badge">0</span></h2>
           </div>
           <button id="clear-history" class="clear-button" type="button" disabled>
             <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -125,6 +125,27 @@
         <div id="history-list" class="history-list" aria-live="polite"></div>
         <p id="history-empty" class="history-empty">Las unidades consultadas aparecerán aquí.</p>
       </section>
+
+      <dialog
+        id="clear-history-dialog"
+        class="confirm-dialog"
+        aria-labelledby="clear-history-title"
+        aria-describedby="clear-history-description"
+      >
+        <h2 id="clear-history-title">¿Limpiar el historial?</h2>
+        <p id="clear-history-description">
+          Se eliminarán todas las consultas guardadas en este navegador. Esta acción no se puede deshacer.
+        </p>
+        <p id="clear-history-error" class="dialog-error" role="alert" hidden></p>
+        <div class="confirm-dialog-actions">
+          <button id="cancel-clear-history" class="dialog-button" type="button" autofocus>
+            Conservar historial
+          </button>
+          <button id="confirm-clear-history" class="dialog-button dialog-button-danger" type="button">
+            Eliminar historial
+          </button>
+        </div>
+      </dialog>
     </main>
 
     <footer class="footer">

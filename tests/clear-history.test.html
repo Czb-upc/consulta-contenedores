@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pruebas de confirmación del historial</title>
+  <style>
+    body {
+      max-width: 760px;
+      margin: 32px auto;
+      padding: 0 20px;
+      color: #e8edf1;
+      background: #0b1117;
+      font: 14px "Segoe UI", Arial, sans-serif;
+    }
+
+    iframe {
+      width: 100%;
+      height: 760px;
+      margin-top: 18px;
+      border: 1px solid #22313d;
+    }
+
+    #test-results {
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pruebas de confirmación del historial</h1>
+  <pre id="test-results" role="status" aria-live="polite">Ejecutando pruebas…</pre>
+  <iframe title="Aplicación bajo prueba"></iframe>
+  <script>
+    const CLAVE_HISTORIAL = "muelle-ops-historial";
+    const resultados = document.querySelector("#test-results");
+    const iframe = document.querySelector("iframe");
+    const valorOriginal = localStorage.getItem(CLAVE_HISTORIAL);
+
+    function afirmar(condicion, mensaje) {
+      if (!condicion) throw new Error(mensaje);
+    }
+
+    function esperarCarga() {
+      return new Promise((resolver, rechazar) => {
+        iframe.addEventListener("load", resolver, { once: true });
+        iframe.addEventListener("error", rechazar, { once: true });
+      });
+    }
+
+    async function ejecutarPruebas() {
+      const historialDePrueba = JSON.stringify([{ codigo: "MSCU1234567" }]);
+
+      try {
+        localStorage.setItem(CLAVE_HISTORIAL, historialDePrueba);
+        const cargaInicial = esperarCarga();
+        iframe.src = "../index.html";
+        await cargaInicial;
+
+        const documento = iframe.contentDocument;
+        const limpiar = documento.querySelector("#clear-history");
+        const dialogo = documento.querySelector("#clear-history-dialog");
+        const cancelar = documento.querySelector("#cancel-clear-history");
+        const confirmar = documento.querySelector("#confirm-clear-history");
+        const lista = documento.querySelector("#history-list");
+
+        afirmar(lista.childElementCount === 1, "El historial de prueba no se mostró.");
+        afirmar(!limpiar.disabled, "El botón no se habilitó con elementos en el historial.");
+        afirmar(
+          dialogo.getAttribute("aria-labelledby") === "clear-history-title"
+            && dialogo.getAttribute("aria-describedby") === "clear-history-description",
+          "El diálogo no tiene referencias accesibles a su título y descripción."
+        );
+
+        limpiar.focus();
+        limpiar.click();
+        afirmar(dialogo.open, "El diálogo no se abrió al solicitar la limpieza.");
+        afirmar(documento.activeElement.id === "cancel-clear-history", "El foco inicial no se colocó en cancelar.");
+        afirmar(
+          localStorage.getItem(CLAVE_HISTORIAL) === historialDePrueba,
+          "Los datos se modificaron antes de confirmar."
+        );
+        cancelar.click();
+        afirmar(!dialogo.open, "El diálogo no se cerró al cancelar.");
+        afirmar(
+          localStorage.getItem(CLAVE_HISTORIAL) === historialDePrueba
+            && lista.childElementCount === 1,
+          "Cancelar modificó el historial o su almacenamiento."
+        );
+
+        limpiar.click();
+        confirmar.click();
+        afirmar(!dialogo.open, "El diálogo no se cerró al confirmar.");
+        afirmar(localStorage.getItem(CLAVE_HISTORIAL) === null, "El historial guardado no se eliminó.");
+        afirmar(lista.childElementCount === 0, "Las entradas visibles no se eliminaron.");
+        afirmar(limpiar.disabled, "El botón no se deshabilitó al quedar vacío el historial.");
+        afirmar(
+          documento.activeElement.id === "history-heading",
+          "El foco no se movió al encabezado del historial tras confirmar."
+        );
+
+        resultados.textContent = "Todas las pruebas pasaron (cancelación, confirmación, foco, estado vacío y etiquetado accesible).";
+      } catch (error) {
+        resultados.textContent = `FALLO: ${error.message}`;
+        resultados.setAttribute("role", "alert");
+      } finally {
+        if (valorOriginal === null) {
+          localStorage.removeItem(CLAVE_HISTORIAL);
+        } else {
+          localStorage.setItem(CLAVE_HISTORIAL, valorOriginal);
+        }
+        const cargaRestaurada = esperarCarga();
+        iframe.contentWindow.location.reload();
+        await cargaRestaurada;
+      }
+    }
+
+    ejecutarPruebas();
+  </script>
+</body>
+</html>
