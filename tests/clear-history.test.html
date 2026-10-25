@@ -98,7 +98,30 @@
           "El foco no se movió al encabezado del historial tras confirmar."
         );
 
-        resultados.textContent = "Todas las pruebas pasaron (cancelación, confirmación, foco, estado vacío y etiquetado accesible).";
+        const campoCodigo = documento.querySelector("#container-code");
+        const resultado = documento.querySelector("#result-section");
+        const tarjeta = documento.querySelector("#container-card");
+        documento.defaultView.scrollTo(0, 0);
+        campoCodigo.value = "MSCU1234567";
+        documento.querySelector("#search-form").requestSubmit();
+        afirmar(!resultado.hidden, "El resultado de búsqueda no se mostró.");
+        afirmar(
+          tarjeta.innerText.includes("MSCU1234567")
+            && tarjeta.innerText.includes("28.450 kg")
+            && tarjeta.innerText.includes("Bahía B-12 / Fila 4 / Nivel 2"),
+          "La ficha no muestra los datos esperados del contenedor."
+        );
+        afirmar(
+          documento.activeElement.id === "result-heading",
+          "El foco no pasó al encabezado de la ficha de resultados."
+        );
+        const rect = resultado.getBoundingClientRect();
+        afirmar(
+          rect.top >= 0 && rect.bottom <= documento.defaultView.innerHeight,
+          "La ficha completa no se desplazó a la vista tras la consulta."
+        );
+
+        resultados.textContent = "Todas las pruebas pasaron (búsqueda y visibilidad del resultado, cancelación, confirmación, foco, estado vacío y etiquetado accesible).";
       } catch (error) {
         resultados.textContent = `FALLO: ${error.message}`;
         resultados.setAttribute("role", "alert");

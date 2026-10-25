@@ -6,6 +6,7 @@ const formulario = document.querySelector("#search-form");
 const campoCodigo = document.querySelector("#container-code");
 const mensajeBusqueda = document.querySelector("#search-message");
 const seccionResultado = document.querySelector("#result-section");
+const encabezadoResultado = document.querySelector("#result-heading");
 const tarjetaContenedor = document.querySelector("#container-card");
 const estadoVacio = document.querySelector("#empty-state");
 const listaHistorial = document.querySelector("#history-list");
@@ -192,6 +193,8 @@ function mostrarContenedor(contenedor) {
   tarjetaContenedor.append(encabezado, contenido);
   seccionResultado.hidden = false;
   estadoVacio.hidden = true;
+  seccionResultado.scrollIntoView({ block: "start" });
+  encabezadoResultado.focus({ preventScroll: true });
 }
 
 function consultar(codigoOriginal) {
